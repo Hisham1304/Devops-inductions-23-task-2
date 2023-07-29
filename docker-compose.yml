@@ -1,0 +1,47 @@
+version: "3.8"
+
+services:
+  frontend:
+    build:
+      context: ./Frontend
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - 3000:3000
+    networks:
+      - frontend_network
+
+  backend:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+    networks:
+      - backend_network
+
+  db:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_DB: rust_server
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pg13
+    networks:
+      - backend_network
+    ports:
+      - 5432:5432
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+networks:
+  frontend_network:
+  backend_network:
+
+volumes:
+  db_data:
